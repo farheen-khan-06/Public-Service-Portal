@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Public Service Portal</title>
+  <meta name="description" content="One platform for jobs, government schemes, women's rights, legal documents and more." />
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Font Awesome (backup icons) -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+
+  <link href="style.css" rel="stylesheet" />
+  <meta property="og:image" content="https://bolt.new/static/og_default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://bolt.new/static/og_default.png">
+</head>
+<body id="bodyMain">
+
+<!-- ===== TOAST ===== -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index:9999">
+  <div id="appToast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body fw-semibold" id="appToastMsg">Notification</div>
+      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LOGIN PROMPT MODAL ===== -->
+<div class="modal fade" id="loginPromptModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Login Required</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center py-4">
+        <i class="bi bi-person-plus-fill fs-1 text-primary mb-3 d-block"></i>
+        <p class="fw-semibold mb-1" id="loginPromptMsg">Please login or create an account to continue.</p>
+        <p class="text-muted small mb-4">You need an account to perform this action.</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn-grad-blue" onclick="dismissLoginPrompt();showSection('login')"><i class="bi bi-box-arrow-in-right me-1"></i>Login</button>
+          <button class="btn-grad-green" onclick="dismissLoginPrompt();showSection('signup')"><i class="bi bi-person-plus me-1"></i>Create Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-3 px-lg-4">
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center gap-2 fw-bold" href="#" onclick="showSection('home');return false;">
+      <span class="brand-icon"><i class="bi bi-globe2"></i></span>
+      <span class="brand-name" data-i18n="brand">Public Service Portal</span>
+    </a>
+
+    <!-- Toggler -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Desktop nav -->
+    <div class="collapse navbar-collapse">
+      <!-- Public nav (hidden for admin) -->
+      <ul class="navbar-nav me-auto mb-0 align-items-lg-center" id="publicNav">
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-nav="home" onclick="showSection('home');return false;" data-i18n="home">Home</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-nav="jobs" onclick="showSection('jobs');return false;" data-i18n="jobAssistant">Job Assistant</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-nav="women" onclick="showSection('women');return false;" data-i18n="womenRights">Women &amp; Rights</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-nav="schemes" onclick="showSection('schemes');return false;" data-i18n="govSchemes">Government Schemes</a></li>
+        
+       
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-nav="about" onclick="showSection('about');return false;" data-i18n="about">About</a></li>
+        <li class="nav-item d-none" id="navMyJobs"><a class="nav-link nav-pill" href="#" onclick="showSection('dashboard');return false;"><i class="bi bi-briefcase-fill me-1"></i>My Jobs</a></li>
+      </ul>
+      <!-- Admin nav -->
+      <ul class="navbar-nav me-auto mb-0 align-items-lg-center d-none" id="adminNav">
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" onclick="showSection('admin');return false;"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" onclick="showSection('admin');showAdminTab('users');return false;">Users</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" onclick="showSection('admin');showAdminTab('workers');return false;">Workers</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" onclick="showSection('admin');showAdminTab('schemes');return false;">Schemes</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" onclick="showSection('admin');showAdminTab('docs');return false;">Documents</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" onclick="showSection('admin');showAdminTab('content');return false;">Content</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" onclick="showSection('admin');showAdminTab('comm');return false;">Communication</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" onclick="showSection('admin');showAdminTab('reports');return false;">Reports</a></li>
+      </ul>
+      <div class="d-flex align-items-center gap-2">
+        <!-- Search -->
+        <div class="search-wrap d-none d-xl-flex">
+          <i class="bi bi-search search-icon"></i>
+          <input id="globalSearch" class="search-input" type="text" placeholder="Search..." oninput="runGlobalSearch()" autocomplete="off" />
+        </div>
+    
+        <!-- Theme -->
+        <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle theme">
+          <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+        </button>
+        <!-- Notifications -->
+        <div class="dropdown">
+          <button class="icon-btn position-relative" data-bs-toggle="dropdown" id="notifBtn">
+            <i class="bi bi-bell-fill"></i>
+            <span class="notif-dot" id="notifBadge">3</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end notif-panel p-0" id="notifDropdown"></div>
+        </div>
+        <!-- Login (not logged in) -->
+        <button class="btn-login" id="navLoginBtn" onclick="showSection('login')">
+          <i class="bi bi-box-arrow-in-right me-1"></i><span data-i18n="login">Login</span>
+        </button>
+        <button class="btn-signup" id="navSignupBtn" onclick="showSection('signup')">
+          <i class="bi bi-person-plus me-1"></i><span>Sign Up</span>
+        </button>
+        <!-- Logged in -->
+        <button class="btn-profile d-none" id="navDashboardBtn" onclick="showSection('dashboard')">
+          <i class="bi bi-person-fill me-1"></i><span id="navDashboardLabel">Dashboard</span>
+          <span class="role-badge" id="navRoleBadge">Citizen</span>
+        </button>
+        <button class="btn-logout d-none" id="navLogoutBtn" onclick="doLogout()">
+          <i class="bi bi-box-arrow-right me-1"></i><span>Logout</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ===== MOBILE OFFCANVAS ===== -->
+<div class="offcanvas offcanvas-start" id="mobileMenu" tabindex="-1">
+  <div class="offcanvas-header border-bottom">
+    <h6 class="offcanvas-title fw-bold"><i class="bi bi-globe2 me-2" style="color:#4f46e5"></i>Menu</h6>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="search-wrap w-100 mb-3">
+      <i class="bi bi-search search-icon"></i>
+      <input class="search-input w-100" type="text" placeholder="Search..." oninput="document.getElementById('globalSearch').value=this.value;runGlobalSearch()" />
+    </div>
+    <nav class="nav flex-column" id="mobilePublicNav">
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('home');return false;"><i class="bi bi-house-fill me-2"></i>Home</a>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('jobs');return false;"><i class="bi bi-briefcase-fill me-2"></i>Job Assistant</a>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('women');return false;"><i class="bi bi-shield-check me-2"></i>Women &amp; Rights</a>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('schemes');return false;"><i class="bi bi-bank2 me-2"></i>Government Schemes</a>
+      
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showLegalDocs();return false;"><i class="bi bi-file-earmark-text me-2"></i>Legal Documents</a>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('about');return false;"><i class="bi bi-info-circle me-2"></i>About</a>
+      <hr/>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('login');return false;"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('signup');return false;"><i class="bi bi-person-plus me-2"></i>Sign Up</a>
+    </nav>
+    <nav class="nav flex-column d-none" id="mobileAdminNav">
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('admin');return false;"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</a>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('admin');showAdminTab('users');return false;"><i class="bi bi-people me-2"></i>Users</a>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('admin');showAdminTab('workers');return false;"><i class="bi bi-person-badge me-2"></i>Workers</a>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('admin');showAdminTab('schemes');return false;"><i class="bi bi-bank2 me-2"></i>Schemes</a>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="showSection('admin');showAdminTab('reports');return false;"><i class="bi bi-graph-up me-2"></i>Reports</a>
+      <hr/>
+      <a class="nav-link mobile-nav-link" href="#" data-bs-dismiss="offcanvas" onclick="doLogout();return false;"><i class="bi bi-box-arrow-right me-2"></i>Logout</a>
+    </nav>
+    <div class="d-flex gap-2 mt-3">
+  <button class="icon-btn" onclick="toggleTheme()">
+    <i class="bi bi-moon-stars-fill"></i>
+  </button>
+</div>
+  </div>
+</div>
+
+<!-- ===== GLOBAL SEARCH RESULTS ===== -->
+<div id="searchResults" class="search-results-panel"></div>
+
+<!-- ================================================================ -->
+<!-- HOME SECTION -->
+<!-- ================================================================ -->
+<section id="home" class="page-section">
+
+  <!-- HERO -->
+  <div class="hero-section">
+    <div class="container py-5">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <span class="hero-badge">Citizen-Friendly</span>
+          <h1 class="hero-title mt-3 mb-3" data-i18n="heroTitle">One Platform.<br/>Multiple Public Services.</h1>
+          <p class="hero-subtitle mb-4" data-i18n="heroSub">Find jobs, government schemes, women's rights information, legal document assistance and useful resources — all in one place, in your language.</p>
+          <div class="d-flex flex-wrap gap-3 mb-4">
+            <button class="hero-btn-primary" onclick="showSection('jobs')"><i class="bi bi-grid-3x3-gap-fill me-2"></i><span data-i18n="exploreServices">Explore Services</span></button>
+            <button class="hero-btn-secondary" onclick="showSection('schemes')"><i class="bi bi-bank2 me-2"></i><span data-i18n="findSchemes">Find Government Schemes</span></button>
+          </div>
+          <div class="hero-trust d-flex flex-wrap gap-4">
+            <div><i class="bi bi-people-fill me-1"></i><strong>1L+</strong> <span data-i18n="citizens">Citizens</span></div>
+            <div><i class="bi bi-bank2 me-1"></i><strong>50+</strong> <span data-i18n="schemesLabel">Schemes</span></div>
+          </div>
+        </div>
+        <div class="col-lg-6 d-flex justify-content-center">
+          <div class="hero-visual-box">
+            <div class="hv-ring r1"></div>
+            <div class="hv-ring r2"></div>
+            <div class="hv-ring r3"></div>
+            <i class="bi bi-globe-americas hv-globe"></i>
+            <div class="hv-chip chip-jobs"><i class="bi bi-briefcase-fill"></i> Jobs</div>
+            <div class="hv-chip chip-scheme"><i class="bi bi-bank2"></i> Schemes</div>
+            <div class="hv-chip chip-rights"><i class="bi bi-shield-check"></i> Rights</div>
+            <div class="hv-chip chip-legal"><i class="bi bi-file-text-fill"></i> Legal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICE CARDS -->
+  <div class="container py-5">
+    <div class="text-center mb-5">
+      <h2 class="section-heading" data-i18n="ourServices">Our Main Services</h2>
+      <p class="section-sub" data-i18n="ourServicesSub">Everything a citizen needs, organized in one place.</p>
+    </div>
+    <div class="row g-4" id="serviceCards"></div>
+  </div>
+
+  <!-- WHY USE THIS PORTAL -->
+  <div class="why-bg py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 class="section-heading" data-i18n="whyPortal">Why Use This Portal?</h2>
+        <p class="section-sub" data-i18n="whySub">Built to make public services simple for everyone.</p>
+      </div>
+      <div class="row g-3" id="whyCards"></div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="container py-5">
+    <div class="text-center mb-5">
+      <h2 class="section-heading" data-i18n="howWorks">How It Works</h2>
+      <p class="section-sub" data-i18n="howSub">Four simple steps to get the help you need.</p>
+    </div>
+    <div class="row g-4" id="howSteps"></div>
+  </div>
+
+  <!-- QUICK ACCESS -->
+  <div class="quick-bg py-5">
+    <div class="container text-center">
+      <h2 class="section-heading mb-2" data-i18n="quickAccess">Quick Access</h2>
+      <p class="section-sub mb-4">Jump directly to what you need.</p>
+      <div class="d-flex flex-wrap justify-content-center gap-3" id="quickBtns"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- JOB ASSISTANT SECTION -->
+<!-- ================================================================ -->
+<section id="jobs" class="page-section d-none">
+  <div class="sec-header jobs-header">
+    <div class="container py-4">
+      <h1 class="fw-bold mb-1 text-white"><i class="bi bi-briefcase-fill me-2"></i>Job Assistant</h1>
+      <p class="mb-0 text-white" style="opacity:.85">Connect with trusted local skilled workers and get career guidance, skill development and government recommendations.</p>
+    </div>
+  </div>
+  <div class="container py-4">
+    <!-- Role notice -->
+    <div id="jaRoleNotice"></div>
+
+    <!-- CITIZEN + PUBLIC TABS -->
+    <ul class="nav nav-pills nav-fill flex-nowrap overflow-auto job-tabs mb-4 pb-1" role="tablist" id="jaCitizenTabs">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tjFindWorkers"><i class="bi bi-people-fill me-1"></i>Find Workers</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tjRequests"><i class="bi bi-diagram-3 me-1"></i>Requests &amp; Bookings</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tjSaved"><i class="bi bi-bookmark-fill me-1"></i>Saved Workers</button></li>
+    </ul>
+    <div class="tab-content" id="jaCitizenContent">
+      <!-- FIND WORKERS -->
+      <div class="tab-pane fade show active" id="tjFindWorkers">
+        <div class="row g-2 mb-3">
+          <div class="col-6 col-md-3"><select id="workerSkillFilter" class="form-select form-select-sm" onchange="renderWorkers()"></select></div>
+          <div class="col-6 col-md-3"><select id="workerLocFilter" class="form-select form-select-sm" onchange="renderWorkers()"></select></div>
+          <div class="col-6 col-md-3"><select id="workerRatingFilter" class="form-select form-select-sm" onchange="renderWorkers()"><option value="0">Any Rating</option><option value="4">4+ Stars</option><option value="4.5">4.5+ Stars</option></select></div>
+          <div class="col-6 col-md-3"><input id="workerSearch" class="form-control form-control-sm" placeholder="Search workers..." oninput="renderWorkers()" /></div>
+        </div>
+        <div class="row g-3" id="workerList"></div>
+      </div>
+      <!-- REQUESTS & BOOKINGS -->
+      <div class="tab-pane fade" id="tjRequests">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="fw-bold mb-0"><i class="bi bi-diagram-3 text-primary me-2"></i>Service Requests &amp; Bookings</h5>
+          <select id="reqStatusFilter" class="form-select form-select-sm" style="max-width:180px" onchange="renderCitizenRequests()">
+            <option value="">All Statuses</option><option>Pending</option><option>Accepted</option><option>Scheduled</option><option>Completed</option><option>Cancelled</option><option>Rejected</option>
+          </select>
+        </div>
+        <div id="citizenReqList"></div>
+      </div>
+      <!-- SAVED WORKERS -->
+      <div class="tab-pane fade" id="tjSaved">
+        <h5 class="fw-bold mb-3"><i class="bi bi-bookmark-fill text-warning me-2"></i>Saved Workers</h5>
+        <div class="row g-3" id="savedWorkersList"></div>
+      </div>
+    </div>
+
+    <!-- WORKER TABS -->
+    <ul class="nav nav-pills nav-fill flex-nowrap overflow-auto job-tabs mb-4 pb-1 d-none" role="tablist" id="jaWorkerTabs">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#twProfile"><i class="bi bi-person-badge me-1"></i>Profile</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#twPortfolio"><i class="bi bi-images me-1"></i>Portfolio</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#twWorkReq"><i class="bi bi-inbox me-1"></i>Work Requests</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#twRoadmap"><i class="bi bi-signpost-split me-1"></i>Career Roadmap</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#twCerts"><i class="bi bi-patch-check me-1"></i>Certifications</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#twWorkerSchemes"><i class="bi bi-bank2 me-1"></i>Govt Schemes</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#twSkillDev"><i class="bi bi-mortarboard me-1"></i>Skill Development</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#twHistory"><i class="bi bi-clock-history me-1"></i>Employment History</button></li>
+    </ul>
+    <div class="tab-content d-none" id="jaWorkerContent">
+      <div class="tab-pane fade show active" id="twProfile"><div id="workerProfileBody"></div></div>
+      <div class="tab-pane fade" id="twPortfolio"><div id="workerPortfolioBody"></div></div>
+      <div class="tab-pane fade" id="twWorkReq"><div id="workerReqBody"></div></div>
+      <div class="tab-pane fade" id="twRoadmap"><div id="workerRoadmapBody"></div></div>
+      <div class="tab-pane fade" id="twCerts"><div id="workerCertsBody"></div></div>
+      <div class="tab-pane fade" id="twWorkerSchemes"><div id="workerSchemesBody"></div></div>
+      <div class="tab-pane fade" id="twSkillDev"><div id="workerSkillDevBody"></div></div>
+      <div class="tab-pane fade" id="twHistory"><div id="workerHistoryBody"></div></div>
+    </div>
+  </div>
+</section>
+<!-- Add Employment Experience Modal -->
+<div class="modal fade" id="addExperienceModal" tabindex="-1" aria-hidden="true">
+
+  <div class="modal-dialog modal-dialog-centered">
+
+    <div class="modal-content">
+
+      <div class="modal-header">
+
+        <h5 class="modal-title">
+          <i class="bi bi-briefcase me-2 text-primary"></i>
+          Add Employment Experience
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close">
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <div class="mb-3">
+
+          <label class="form-label fw-semibold">
+            Job Role / Position
+          </label>
+
+          <input
+            type="text"
+            id="experienceRole"
+            class="form-control"
+            placeholder="e.g. Electrician">
+        </div>
+
+
+        <div class="mb-3">
+
+          <label class="form-label fw-semibold">
+            Company / Organization
+          </label>
+
+          <input
+            type="text"
+            id="experienceCompany"
+            class="form-control"
+            placeholder="e.g. ABC Electrical Services">
+        </div>
+
+
+        <div class="row">
+
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-semibold">
+              Start Year
+            </label>
+
+            <input
+              type="number"
+              id="experienceStart"
+              class="form-control"
+              placeholder="e.g. 2023"
+              min="1950"
+              max="2100">
+
+          </div>
+
+
+          <div class="col-md-6 mb-3">
+
+            <label class="form-label fw-semibold">
+              End Year
+            </label>
+
+            <input
+              type="number"
+              id="experienceEnd"
+              class="form-control"
+              placeholder="Leave blank if current"
+              min="1950"
+              max="2100">
+
+          </div>
+
+        </div>
+
+
+        <div class="form-check mb-3">
+
+          <input
+            class="form-check-input"
+            type="checkbox"
+            id="experienceCurrent">
+
+          <label
+            class="form-check-label"
+            for="experienceCurrent">
+
+            I currently work here
+
+          </label>
+
+        </div>
+
+
+        <div class="mb-2">
+
+          <label class="form-label fw-semibold">
+            Location
+          </label>
+
+          <input
+            type="text"
+            id="experienceLocation"
+            class="form-control"
+            placeholder="e.g. Mumbai">
+
+        </div>
+
+      </div>
+
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+
+          Cancel
+
+        </button>
+
+
+        <button
+          type="button"
+          class="btn-grad-blue"
+          onclick="saveWorkerExperience()">
+
+          <i class="bi bi-check-circle me-1"></i>
+          Save Experience
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+<!-- ================================================================ -->
+<!-- GOVERNMENT SCHEMES SECTION -->
+<!-- ================================================================ -->
+<section id="schemes" class="page-section d-none">
+  <div class="sec-header schemes-header">
+    <div class="container py-4">
+      <h1 class="fw-bold mb-1 text-white"><i class="bi bi-bank2 me-2"></i>Government Scheme Finder</h1>
+      <p class="mb-0 text-white" style="opacity:.85">Discover schemes you may be eligible for — no need to search many websites.</p>
+    </div>
+  </div>
+  <div class="container py-4">
+    <ul class="nav nav-tabs mb-3" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tsAll"><i class="bi bi-card-list me-1"></i>All Schemes</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tsFinder"><i class="bi bi-magic me-1"></i>Personalized Finder</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#tsSaved"><i class="bi bi-bookmark-fill me-1"></i>Saved Schemes</button></li>
+    </ul>
+    <div class="tab-content">
+      <!-- ALL -->
+      <div class="tab-pane fade show active" id="tsAll">
+        <div class="row g-2 mb-3">
+          <div class="col-md-4"><input class="form-control form-control-sm" id="schSearch" placeholder="Search schemes..." oninput="renderSchemes()" /></div>
+          <div class="col-md-2"><select class="form-select form-select-sm" id="schCatFilter" onchange="renderSchemes()"></select></div>
+          <div class="col-md-2"><select class="form-select form-select-sm" id="schGenderFilter" onchange="renderSchemes()"><option value="">Any Gender</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
+        </div>
+        <div class="row g-3" id="schemeList"></div>
+      </div>
+      <!-- FINDER -->
+      <div class="tab-pane fade" id="tsFinder">
+        <div class="card-box mx-auto" style="max-width:680px">
+          <h5 class="fw-bold mb-3"><i class="bi bi-magic text-primary me-2"></i>Find Schemes For You</h5>
+          <div id="finderQ"></div>
+          <button class="btn-grad-blue" onclick="runFinder()"><i class="bi bi-search me-1"></i>Show Matching Schemes</button>
+          <div id="finderResults" class="mt-4"></div>
+        </div>
+      </div>
+      <!-- SAVED -->
+      <div class="tab-pane fade" id="tsSaved"><div class="row g-3" id="savedSchemeList"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- WOMEN PROTECTION & RIGHTS SECTION (includes Legal Documents) -->
+<!-- ================================================================ -->
+<section id="women" class="page-section d-none">
+  <div class="sec-header women-header">
+    <div class="container py-4">
+      <h1 class="fw-bold mb-1 text-white"><i class="bi bi-shield-check me-2"></i>Women Protection &amp; Rights</h1>
+      <p class="mb-0 text-white" style="opacity:.85">Know your rights · Find women's schemes · Generate legal documents · Evidence checklists · Legal aid · Awareness articles</p>
+    </div>
+  </div>
+  <div class="container py-4">
+    <ul class="nav nav-tabs women-tabs mb-3 flex-nowrap overflow-auto" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#twRights"><i class="bi bi-info-circle me-1"></i><span data-i18n="wTabRights">Know Your Legal Rights</span></button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#twSchemes"><i class="bi bi-bank2 me-1"></i><span data-i18n="wTabSchemes">Scheme Finder</span></button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#twLegal"><i class="bi bi-file-earmark-text me-1"></i><span data-i18n="wTabLegal">Legal Documents</span></button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#twEvidence"><i class="bi bi-check2-square me-1"></i><span data-i18n="wTabEvidence">Evidence Checklist</span></button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#twAid"><i class="bi bi-telephone me-1"></i><span data-i18n="wTabAid">Legal Aid &amp; Helpline</span></button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#twArticles"><i class="bi bi-newspaper me-1"></i><span data-i18n="wTabArticles">Awareness Articles</span></button></li>
+    </ul>
+    <div class="tab-content">
+      <!-- RIGHTS -->
+      <div class="tab-pane fade show active" id="twRights">
+        <div class="row g-3 mb-3" id="rightsCategoryFilter"></div>
+        <div class="row g-3" id="rightsList"></div>
+      </div>
+      <!-- SCHEMES -->
+      <div class="tab-pane fade" id="twSchemes">
+        <div class="row g-2 mb-3">
+          <div class="col-md-5"><input class="form-control form-control-sm" id="womenSchSearch" placeholder="Search women's schemes..." oninput="renderWomenSchemes()" /></div>
+          <div class="col-md-4"><select class="form-select form-select-sm" id="womenSchCatFilter" onchange="renderWomenSchemes()"></select></div>
+          <div class="col-md-3"><select class="form-select form-select-sm" id="womenSchEligFilter" onchange="renderWomenSchemes()"><option value="">Any Eligibility</option><option value="income">Income-based</option><option value="age">Age-based</option><option value="category">Category-based</option></select></div>
+        </div>
+        <div class="row g-3" id="womenSchemeList"></div>
+      </div>
+      <!-- LEGAL DOCUMENTS (merged) -->
+      <div class="tab-pane fade" id="twLegal">
+        <div class="alert alert-warning d-flex align-items-start gap-2 mb-4" role="alert">
+          <i class="bi bi-exclamation-triangle-fill mt-1"></i>
+          <div><strong>Disclaimer:</strong> Generated templates are for informational and academic purposes only. This is NOT legal advice. Please verify requirements with the appropriate authority.</div>
+        </div>
+        <div class="card-box mx-auto" style="max-width:820px">
+          <!-- Step progress -->
+          <div class="step-bar mb-3"><div class="step-fill" id="docProgressBar" style="width:16.6%"></div></div>
+          <div class="d-flex justify-content-between text-center mb-4" id="docStepLabels" style="font-size:.78rem"></div>
+          <!-- Steps -->
+          <div id="docStep1">
+            <h5 class="fw-bold mb-3">Step 1 — Select Document Type</h5>
+            <div class="row g-3" id="docTypes"></div>
+          </div>
+          <div id="docStep2" class="d-none">
+            <h5 class="fw-bold mb-3">Step 2 — Personal Details</h5>
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label fw-semibold">Full Name</label><input class="form-control" id="docName" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Address</label><input class="form-control" id="docAddress" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Contact Number</label><input class="form-control" id="docContact" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Email</label><input class="form-control" id="docEmail" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Date</label><input type="date" class="form-control" id="docDate" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">City</label><input class="form-control" id="docCity" /></div>
+            </div>
+          </div>
+          <div id="docStep3" class="d-none">
+            <h5 class="fw-bold mb-3">Step 3 — Complaint Details</h5>
+            <div class="row g-3">
+              <div class="col-12"><label class="form-label fw-semibold">Subject</label><input class="form-control" id="docSubject" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Incident Date</label><input type="date" class="form-control" id="docIncidentDate" /></div>
+              <div class="col-12"><label class="form-label fw-semibold">Complaint Details</label><textarea class="form-control" id="docDetails" rows="5"></textarea></div>
+              <div class="col-12"><label class="form-label fw-semibold">Evidence / Additional Info</label><textarea class="form-control" id="docExtra" rows="2"></textarea></div>
+            </div>
+          </div>
+          <div id="docStep4" class="d-none">
+            <h5 class="fw-bold mb-3">Step 4 — Review Information</h5>
+            <div id="docReview" class="review-box"></div>
+          </div>
+          <div id="docStep5" class="d-none">
+            <h5 class="fw-bold mb-3">Step 5 — Document Preview</h5>
+            <div id="docPreview" class="doc-preview"></div>
+          </div>
+          <div id="docStep6" class="d-none">
+            <h5 class="fw-bold mb-3">Step 6 — Download / Print / Save</h5>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+              <button class="btn-grad-blue" onclick="printDoc()"><i class="bi bi-printer-fill me-1"></i>Print</button>
+              <button class="btn-grad-green" onclick="downloadDoc()"><i class="bi bi-download me-1"></i>Download (.txt)</button>
+              <button class="btn-grad-orange" onclick="saveDoc()"><i class="bi bi-bookmark-fill me-1"></i>Save Document</button>
+            </div>
+            <h6 class="fw-bold mt-3"><i class="bi bi-info-circle me-2 text-primary"></i>Submission Guide</h6>
+            <div id="docSubmitGuide"></div>
+          </div>
+          <!-- Navigation buttons -->
+          <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-outline-secondary rounded-pill px-4" id="docBackBtn" onclick="docBack()"><i class="bi bi-arrow-left me-1"></i>Back</button>
+            <button class="btn-grad-blue" id="docNextBtn" onclick="docNext()"><span id="docNextLabel">Next</span><i class="bi bi-arrow-right ms-1"></i></button>
+          </div>
+        </div>
+        <!-- Saved Docs -->
+        <h5 class="fw-bold mt-4 mb-3"><i class="bi bi-folder2-open me-2 text-primary"></i>Saved Documents</h5>
+        <div class="row g-3" id="savedDocsList"></div>
+      </div>
+      <!-- EVIDENCE CHECKLIST -->
+      <div class="tab-pane fade" id="twEvidence">
+        <div class="alert alert-info d-flex align-items-start gap-2 mb-4" role="alert">
+          <i class="bi bi-info-circle-fill mt-1"></i>
+          <div><strong>Disclaimer:</strong> This checklist provides general informational guidance only. It is NOT legal advice. Please consult a qualified legal professional for your specific situation.</div>
+        </div>
+        <div class="card-box mb-4">
+          <h5 class="fw-bold mb-3"><i class="bi bi-list-check text-primary me-2"></i>Select a Situation</h5>
+          <div class="row g-2" id="evidenceSituationList"></div>
+        </div>
+        <div id="evidenceChecklistArea" class="d-none">
+          <div class="card-box">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="fw-bold mb-0" id="evidenceSituationTitle"></h5>
+              <span class="badge rounded-pill" style="background:#db2777;color:#fff" id="evidenceProgress">0%</span>
+            </div>
+            <div class="prog-bar mb-3"><div class="prog-fill" id="evidenceProgBar" style="width:0%;background:linear-gradient(90deg,#db2777,#f59e0b)"></div></div>
+            <div id="evidenceItems"></div>
+          </div>
+        </div>
+      </div>
+      <!-- LEGAL AID & HELPLINE -->
+      <div class="tab-pane fade" id="twAid">
+        <div class="row g-3" id="legalAidList"></div>
+      </div>
+      <!-- AWARENESS ARTICLES -->
+      <div class="tab-pane fade" id="twArticles">
+        <div class="row g-2 mb-3">
+          <div class="col-md-6"><input class="form-control form-control-sm" id="articleSearch" placeholder="Search articles..." oninput="renderArticles()" /></div>
+          <div class="col-md-4"><select class="form-select form-select-sm" id="articleCatFilter" onchange="renderArticles()"></select></div>
+        </div>
+        <div class="row g-3" id="articleList"></div>
+        <div id="articleReader" class="d-none mt-4">
+          <div class="card-box">
+            <button class="btn btn-outline-secondary btn-sm mb-3" onclick="closeArticleReader()"><i class="bi bi-arrow-left me-1"></i>Back to Articles</button>
+            <div id="articleReaderContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ================================================================ -->
+<!-- ABOUT SECTION -->
+<!-- ================================================================ -->
+<section id="about" class="page-section d-none">
+  <div class="sec-header about-header">
+    <div class="container py-4">
+      <h1 class="fw-bold mb-1 text-white">
+        <i class="bi bi-info-circle-fill me-2"></i>About
+      </h1>
+      <p class="mb-0 text-white" style="opacity:.85">
+        A citizen-friendly platform for accessing essential public services.
+      </p>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <div class="row g-4">
+
+      <div class="col-lg-8">
+
+        <div class="card-box mb-4">
+          <h4 class="fw-bold mb-3">About This Portal</h4>
+
+          <p>
+            The <strong>Public Service Portal</strong> is an
+            integrated platform designed to make important public services
+            easier to find, understand and access.
+          </p>
+
+          <p>
+            The portal brings together employment assistance, government
+            schemes, women's rights and protection resources, career guidance,
+            skill development and legal document assistance in one
+            citizen-friendly platform.
+          </p>
+
+          <p>
+            It is designed especially for citizens and skilled workers who may
+            face difficulties finding reliable information or accessing
+            different services through multiple websites.
+          </p>
+
+          <h5 class="fw-bold mt-4">User Roles</h5>
+
+          <ul>
+            <li>
+              <strong>Citizen</strong> — find skilled workers, request services,
+              save workers, browse government schemes, access women's rights
+              resources and generate legal documents.
+            </li>
+
+            <li>
+              <strong>Skilled Worker</strong> — create and manage a worker
+              profile, receive service requests, manage bookings, showcase
+              work and access career and skill-development resources.
+            </li>
+
+            <li>
+              <strong>Admin</strong> — manage users, workers, schemes,
+              document templates, platform content, notifications,
+              feedback and reports.
+            </li>
+          </ul>
+
+          <h5 class="fw-bold mt-4">Main Modules</h5>
+
+          <ul>
+            <li>
+              <strong>Job Assistant</strong> — connects citizens with local
+              skilled workers and provides career and skill-development
+              resources for workers.
+            </li>
+
+            <li>
+              <strong>Women &amp; Rights</strong> — provides legal rights
+              information, government schemes, career guidance, skill resources
+              and legal document assistance.
+            </li>
+
+            <li>
+              <strong>Government Scheme Finder</strong> — helps citizens
+              discover government schemes and provides personalized
+              eligibility guidance.
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-box">
+          <h5 class="fw-bold mb-3">Technology Stack</h5>
+
+          <p>
+            <strong>Frontend:</strong>
+            HTML5, CSS3, JavaScript, Bootstrap 5
+          </p>
+
+          <p>
+            <strong>Backend:</strong>
+            Python, Flask
+          </p>
+
+          <p class="mb-0">
+            <strong>Database:</strong>
+            MySQL
+          </p>
+        </div>
+
+      </div>
+
+      <div class="col-lg-4">
+
+        <div class="card-box text-center">
+
+          <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-size:2.2rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+            <i class="bi bi-mortarboard-fill"></i>
+          </div>
+
+          <h5 class="fw-bold">TYBSc Computer Science</h5>
+          <p class="text-muted">Academic Final Year Project</p>
+
+          <p class="fw-semibold mb-2">
+             Public Service Portal
+          </p>
+
+          <span class="badge"
+                style="background:#10b981;color:#fff;padding:.4rem .8rem;border-radius:20px;">
+            Full Stack Academic Project
+          </span>
+
+        </div>
+
+        <div class="card-box mt-3 text-center">
+
+          <h6 class="fw-bold mb-3">Quick Stats</h6>
+
+          <div class="row g-2">
+
+            <div class="col-6">
+              <div style="background:#f0f4ff;border-radius:10px;padding:.8rem;">
+                <div style="font-size:1.4rem;font-weight:800;color:#4f46e5;">
+                  3
+                </div>
+                <div style="font-size:.75rem;color:#64748b;">
+                  Main Modules
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div style="background:#f0fdf4;border-radius:10px;padding:.8rem;">
+                <div style="font-size:1.4rem;font-weight:800;color:#16a34a;">
+                  3
+                </div>
+                <div style="font-size:.75rem;color:#64748b;">
+                  Languages
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div style="background:#fff7ed;border-radius:10px;padding:.8rem;">
+                <div style="font-size:1.4rem;font-weight:800;color:#f59e0b;">
+                  8+
+                </div>
+                <div style="font-size:.75rem;color:#64748b;">
+                  Rights Topics
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div style="background:#fdf4ff;border-radius:10px;padding:.8rem;">
+                <div style="font-size:1.4rem;font-weight:800;color:#7c3aed;">
+                  6
+                </div>
+                <div style="font-size:.75rem;color:#64748b;">
+                  Document Types
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- LOGIN -->
+<!-- ================================================================ -->
+<section id="login" class="page-section d-none">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+        <div class="card-box auth-card">
+          <div class="text-center mb-4">
+            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-size:1.8rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;"><i class="bi bi-box-arrow-in-right"></i></div>
+            <h3 class="fw-bold" data-i18n="login">Login</h3>
+            <p class="text-muted small">Welcome back! Please sign in.</p>
+          </div>
+          <form id="loginForm" onsubmit="doLogin(event)">
+            <div class="mb-3"><label class="form-label fw-semibold">Email / Mobile Number</label><input class="form-control" id="loginEmail" required /></div>
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Password</label>
+              <div class="input-group"><input type="password" class="form-control" id="loginPassword" required /><button class="btn btn-outline-secondary" type="button" onclick="togglePwd('loginPassword',this)"><i class="bi bi-eye"></i></button></div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="form-check"><input class="form-check-input" type="checkbox" id="rememberMe" /><label class="form-check-label small" for="rememberMe">Remember me</label></div>
+              <a href="#" class="small" onclick="showForgot();return false;">Forgot password?</a>
+            </div>
+            <button type="submit" class="btn-grad-blue w-100">Login</button>
+            <p class="text-center mt-3 mb-0 small">Don't have an account? <a href="#" onclick="showSection('signup');return false;" data-i18n="signup">Sign Up</a></p>
+          </form>
+
+          <!-- forget password -->
+          <div id="forgotBox" class="d-none mt-3 p-3 border rounded">
+
+    <h6 class="fw-bold mb-3">Reset Password</h6>
+
+    <p class="text-muted small">
+        Enter your registered email and create a new password.
+    </p>
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input
+            type="email"
+            id="forgotEmail"
+            class="form-control"
+            placeholder="Enter your registered email"
+        >
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">New Password</label>
+        <input
+            type="password"
+            id="forgotNewPassword"
+            class="form-control"
+            placeholder="Enter new password"
+        >
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Confirm New Password</label>
+        <input
+            type="password"
+            id="forgotConfirmPassword"
+            class="form-control"
+            placeholder="Confirm new password"
+        >
+    </div>
+
+    <button
+        type="button"
+        class="btn btn-primary w-100"
+        onclick="sendReset()">
+        Reset Password
+    </button>
+
+</div>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- SIGNUP -->
+<!-- ================================================================ -->
+<section id="signup" class="page-section d-none">
+  <div class="container py-5">
+    <!-- Role Choice -->
+    <div id="signupChoice" class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="text-center mb-4">
+          <h3 class="fw-bold">How would you like to use the portal?</h3>
+          <p class="text-muted">Choose your account type to get started.</p>
+        </div>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="role-choice-card" onclick="showCitizenSignup()">
+              <div class="role-choice-icon citizen"><i class="bi bi-people-fill"></i></div>
+              <h4 class="fw-bold">Citizen</h4>
+              <p class="text-muted small">Find skilled workers, post jobs, browse government schemes, access rights information, generate legal documents and more.</p>
+              <ul class="text-start small text-muted ps-3 mb-3">
+                <li>Find &amp; save workers</li>
+                <li>Post jobs &amp; track requests</li>
+                <li>Browse government schemes</li>
+                <li>Generate legal documents</li>
+              </ul>
+              <button class="btn-grad-blue w-100">Create Citizen Account</button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="role-choice-card" onclick="showWorkerSignup()">
+              <div class="role-choice-icon worker"><i class="bi bi-tools"></i></div>
+              <h4 class="fw-bold">Skilled Worker</h4>
+              <p class="text-muted small">All citizen features plus: find jobs, manage your professional profile, receive work requests, build your career.</p>
+              <ul class="text-start small text-muted ps-3 mb-3">
+                <li>All citizen features</li>
+                <li>Find &amp; apply for jobs</li>
+                <li>Manage worker profile</li>
+                <li>Receive work requests</li>
+              </ul>
+              <button class="btn-grad-green w-100">Create Worker Account</button>
+            </div>
+          </div>
+        </div>
+        <p class="text-center mt-4 small text-muted">Already have an account? <a href="#" onclick="showSection('login');return false;">Login here</a></p>
+      </div>
+    </div>
+
+    <!-- Citizen Signup Form -->
+    <div id="citizenSignup" class="d-none row justify-content-center">
+      <div class="col-md-7 col-lg-6">
+        <div class="card-box auth-card">
+          <div class="text-center mb-4">
+            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;font-size:1.8rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;"><i class="bi bi-people-fill"></i></div>
+            <h3 class="fw-bold">Citizen Registration</h3>
+            <p class="text-muted small">Create your citizen account to access all services.</p>
+          </div>
+          <form id="citizenSignupForm" onsubmit="doCitizenSignup(event)">
+            <div class="row g-3">
+              <div class="col-md-6"><label class="form-label fw-semibold">Full Name</label><input class="form-control" id="csName" required /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Profile Photo</label><input type="file" class="form-control" accept="image/*" onchange="previewPhoto(this,'csPhotoPreview')" /><div id="csPhotoPreview" class="mt-2"></div></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Email</label><input type="email" class="form-control" id="csEmail" required /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Mobile Number</label><input class="form-control" id="csMobile" required pattern="[0-9]{10}" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Password</label><div class="input-group"><input type="password" class="form-control" id="csPassword" required /><button class="btn btn-outline-secondary" type="button" onclick="togglePwd('csPassword',this)"><i class="bi bi-eye"></i></button></div></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Confirm Password</label><div class="input-group"><input type="password" class="form-control" id="csConfirm" required /><button class="btn btn-outline-secondary" type="button" onclick="togglePwd('csConfirm',this)"><i class="bi bi-eye"></i></button></div></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Location / State</label><input class="form-control" id="csLocation" required /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Preferred Language</label><select class="form-select" id="csLang"><option>English</option><option>हिन्दी</option><option>मराठी</option></select></div>
+            </div>
+            <button type="submit" class="btn-grad-blue w-100 mt-3">Create Citizen Account</button>
+            <p class="text-center mt-3 mb-0 small"><a href="#" onclick="showSignupChoice();return false;"><i class="bi bi-arrow-left me-1"></i>Back to role choice</a></p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Worker Signup Form -->
+    <div id="workerSignup" class="d-none row justify-content-center">
+      <div class="col-lg-9">
+        <div class="card-box auth-card" style="max-width:820px">
+          <div class="text-center mb-4">
+            <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;font-size:1.8rem;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;"><i class="bi bi-tools"></i></div>
+            <h3 class="fw-bold">Skilled Worker Registration</h3>
+            <p class="text-muted small">Create your worker profile and start finding jobs.</p>
+          </div>
+          <form id="workerSignupForm" onsubmit="doWorkerSignup(event)">
+            <h6 class="fw-bold text-primary mb-2"><i class="bi bi-person-lines-fill me-1"></i>Personal Information</h6>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6"><label class="form-label fw-semibold">Full Name</label><input class="form-control" id="wsName" required /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Profile Photo</label><input type="file" class="form-control" accept="image/*" onchange="previewPhoto(this,'wsPhotoPreview')" /><div id="wsPhotoPreview" class="mt-2"></div></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Email</label><input type="email" class="form-control" id="wsEmail" required /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Mobile Number</label><input class="form-control" id="wsMobile" required pattern="[0-9]{10}" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Location</label><input class="form-control" id="wsLocation" required /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Area</label><input class="form-control" id="wsArea" /></div>
+            </div>
+            <h6 class="fw-bold text-success mb-2"><i class="bi bi-briefcase-fill me-1"></i>Professional Information</h6>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6"><label class="form-label fw-semibold">Primary Skill</label><select class="form-select" id="wsSkill" required></select></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Additional Skills</label><input class="form-control" id="wsSkills" placeholder="e.g. Wiring, Repair" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Years of Experience</label><input type="number" class="form-control" id="wsExp" min="0" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Languages Known</label><input class="form-control" id="wsLangs" placeholder="Hindi, Marathi, English" /></div>
+              <div class="col-12"><label class="form-label fw-semibold">Services Offered</label><input class="form-control" id="wsServices" placeholder="Fan repair, Switchboard, Wiring" /></div>
+              <div class="col-12"><label class="form-label fw-semibold">About / Introduction</label><input class="form-control" id="wsAbout" /></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Availability</label><select class="form-select" id="wsAvail"><option>Full Time</option><option>Part Time</option><option>Weekends</option><option>On Call</option></select></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Expected Charges</label><input class="form-control" id="wsCharges" placeholder="e.g. ₹500/day" /></div>
+            </div>
+            <h6 class="fw-bold text-warning mb-2"><i class="bi bi-award-fill me-1"></i>Professional Profile</h6>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6"><label class="form-label fw-semibold">Portfolio / Work Images</label><input type="file"id="wsPortfolio"class="form-control"accept="image/*"multiple onchange="toast('Portfolio images selected')"
+/></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Certifications</label><input class="form-control" id="wsCerts" placeholder="e.g. ITI Electrician, Safety Cert" /></div>
+              <div class="col-12"><label class="form-label fw-semibold">Previous Work Experience</label><input class="form-control" id="wsHistory" placeholder="e.g. ABC Electric 2018-22" /></div>
+            </div>
+            <h6 class="fw-bold text-danger mb-2"><i class="bi bi-shield-lock-fill me-1"></i>Account Information</h6>
+            <div class="row g-3 mb-3">
+              <div class="col-md-6"><label class="form-label fw-semibold">Password</label><div class="input-group"><input type="password" class="form-control" id="wsPassword" required /><button class="btn btn-outline-secondary" type="button" onclick="togglePwd('wsPassword',this)"><i class="bi bi-eye"></i></button></div></div>
+              <div class="col-md-6"><label class="form-label fw-semibold">Confirm Password</label><div class="input-group"><input type="password" class="form-control" id="wsConfirm" required /><button class="btn btn-outline-secondary" type="button" onclick="togglePwd('wsConfirm',this)"><i class="bi bi-eye"></i></button></div></div>
+            </div>
+            <button type="submit" class="btn-grad-green w-100 mt-2">Create Worker Account</button>
+            <p class="text-center mt-3 mb-0 small"><a href="#" onclick="showSignupChoice();return false;"><i class="bi bi-arrow-left me-1"></i>Back to role choice</a></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- DASHBOARD (Role-based: Citizen / Worker) -->
+<!-- ================================================================ -->
+<section id="dashboard" class="page-section d-none">
+  <div id="dashboardHeader"></div>
+  <div class="container py-4">
+    <div id="dashboardContent"></div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- ADMIN DASHBOARD -->
+<!-- ================================================================ -->
+<section id="admin" class="page-section d-none">
+  <div class="sec-header admin-header">
+    <div class="container py-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div>
+        <h1 class="fw-bold mb-1 text-white"><i class="bi bi-shield-fill me-2"></i>Admin Dashboard</h1>
+        <p class="mb-0 text-white" style="opacity:.85">Manage users, workers, jobs, schemes, documents and platform content.</p>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge" style="background:rgba(255,255,255,.25);color:#fff;padding:.4rem .8rem;border-radius:20px;"><i class="bi bi-person-gear me-1"></i>Administrator</span>
+      </div>
+    </div>
+  </div>
+  <div class="container py-4">
+    <ul class="nav nav-tabs admin-tabs mb-3 flex-nowrap overflow-auto" role="tablist">
+      <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#taOverview" onclick="renderAdminOverview()"><i class="bi bi-graph-up me-1"></i>Overview</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#taUsers" onclick="renderAdminUsers()"><i class="bi bi-people me-1"></i>Users</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#taWorkers" onclick="renderAdminWorkers()"><i class="bi bi-person-badge me-1"></i>Workers</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#taSchemes" onclick="renderAdminSchemes()"><i class="bi bi-bank2 me-1"></i>Schemes</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#taDocs" onclick="renderAdminDocs()"><i class="bi bi-file-earmark-text me-1"></i>Documents</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#taContent" onclick="renderAdminContent()"><i class="bi bi-collection me-1"></i>Content</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#taComm" onclick="renderAdminComm()"><i class="bi bi-chat-dots me-1"></i>Communication</button></li>
+      <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#taReports" onclick="renderAdminReports()"><i class="bi bi-bar-chart me-1"></i>Reports</button></li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane fade show active" id="taOverview"><div id="adminOverviewBody"></div></div>
+      <div class="tab-pane fade" id="taUsers"><div id="adminUsersBody"></div></div>
+      <div class="tab-pane fade" id="taWorkers"><div id="adminWorkersBody"></div></div>
+      <div class="tab-pane fade" id="taSchemes"><div id="adminSchemesBody"></div></div>
+      <div class="tab-pane fade" id="taDocs"><div id="adminDocsBody"></div></div>
+      <div class="tab-pane fade" id="taContent"><div id="adminContentBody"></div></div>
+      <div class="tab-pane fade" id="taComm"><div id="adminCommBody"></div></div>
+      <div class="tab-pane fade" id="taReports"><div id="adminReportsBody"></div></div>
+    </div>
+  </div>
+</section>
+<!-- User Details Modal -->
+<div class="modal fade" id="adminUserDetailsModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-person-circle me-2"></i>
+          User Details
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body" id="adminUserDetailsBody">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Block / Unblock Confirmation Modal -->
+<div class="modal fade" id="adminStatusModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 550px;">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="adminStatusModalTitle">
+          Block User
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body" id="adminStatusModalBody">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button type="button"
+                class="btn btn-danger"
+                id="adminStatusConfirmBtn"
+                onclick="confirmAdminUserStatusChange()">
+          Block User
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Admin Worker Details Modal -->
+<div class="modal fade" id="adminWorkerDetailsModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-person-badge me-2"></i>
+          Worker Details
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body" id="adminWorkerDetailsBody">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN SCHEME DETAILS MODAL -->
+<div class="modal fade" id="adminSchemeDetailsModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-bank2 me-2"></i>
+          Scheme Details
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div
+        class="modal-body"
+        id="adminSchemeDetailsBody">
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN EDIT SCHEME MODAL -->
+<div class="modal fade" id="adminEditSchemeModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>
+          Edit Scheme
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div
+        class="modal-body"
+        id="adminEditSchemeBody">
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn-grad-blue"
+          id="adminSaveSchemeBtn"
+          onclick="saveAdminScheme()">
+          <i class="bi bi-check-circle me-1"></i>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>  
+<!-- ADMIN ADD SCHEME MODAL -->
+<div class="modal fade" id="adminAddSchemeModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-plus-circle me-2"></i>
+          Add New Scheme
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div
+        class="modal-body"
+        id="adminAddSchemeBody">
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn-grad-blue"
+          id="adminAddSchemeBtn"
+          onclick="saveNewAdminScheme()">
+          <i class="bi bi-plus-circle me-1"></i>
+          Add Scheme
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>  
+<!-- ADMIN DELETE SCHEME CONFIRMATION MODAL -->
+<div class="modal fade" id="adminDeleteSchemeModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+          Delete Scheme
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-2">
+          Are you sure you want to delete this scheme?
+        </p>
+
+        <div
+          class="fw-semibold text-danger"
+          id="adminDeleteSchemeName">
+        </div>
+
+        <small class="text-muted">
+          This action cannot be undone.
+        </small>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger"
+          id="adminConfirmDeleteSchemeBtn"
+          onclick="confirmDeleteAdminScheme()">
+          <i class="bi bi-trash me-1"></i>
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ADMIN ADD DOCUMENT TEMPLATE MODAL -->
+<div class="modal fade" id="adminAddDocumentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-file-earmark-plus me-2"></i>
+          Add Document Template
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div
+        class="modal-body"
+        id="adminAddDocumentBody">
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn-grad-blue"
+          id="adminAddDocumentBtn"
+          onclick="saveNewAdminDocumentTemplate()">
+
+          <i class="bi bi-plus-circle me-1"></i>
+          Add Template
+
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN EDIT DOCUMENT TEMPLATE MODAL -->
+<div class="modal fade" id="adminEditDocumentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>
+          Edit Document Template
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div
+        class="modal-body"
+        id="adminEditDocumentBody">
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn-grad-blue"
+          onclick="updateAdminDocumentTemplate()">
+
+          <i class="bi bi-check-circle me-1"></i>
+          Save Changes
+
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN DELETE DOCUMENT TEMPLATE MODAL -->
+<div class="modal fade" id="adminDeleteDocumentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-trash3 text-danger me-2"></i>
+          Delete Document Template
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <p class="mb-1">
+          Are you sure you want to delete this document template?
+        </p>
+
+        <p class="text-muted small mb-0">
+          This action cannot be undone.
+        </p>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger"
+          id="confirmDeleteDocumentBtn">
+          <i class="bi bi-trash3 me-1"></i>
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN VIEW GENERATED DOCUMENT MODAL -->
+<div class="modal fade" id="adminViewDocumentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-file-earmark-text text-primary me-2"></i>
+          Generated Document
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div
+        class="modal-body"
+        id="adminViewDocumentBody">
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ADMIN LEGAL RIGHT MODAL -->
+<div class="modal fade" id="womenRightModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="womenRightModalTitle">
+          Add Legal Right
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <input type="hidden" id="womenRightId">
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Category ID</label>
+            <input type="text" class="form-control" id="womenRightCategoryId"
+                   placeholder="e.g. domestic">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Category Title</label>
+            <input type="text" class="form-control" id="womenRightCategoryTitle">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Category Icon</label>
+            <input type="text" class="form-control" id="womenRightCategoryIcon"
+                   placeholder="bi-house">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Category Color</label>
+            <input type="text" class="form-control" id="womenRightCategoryColor"
+                   placeholder="#0d6efd">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Category Description</label>
+            <textarea class="form-control" id="womenRightCategoryDescription" rows="2"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Right Title</label>
+            <input type="text" class="form-control" id="womenRightTitle">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Right Description</label>
+            <textarea class="form-control" id="womenRightDescription" rows="3"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Key Points</label>
+            <textarea class="form-control" id="womenRightKeyPoints" rows="3"></textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Law</label>
+            <input type="text" class="form-control" id="womenRightLaw">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Action</label>
+            <input type="text" class="form-control" id="womenRightAction">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn-grad-blue" onclick="saveWomenRight()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ADMIN DELETE LEGAL RIGHT CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteWomenRightModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+          Delete Legal Right
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-0">
+          Are you sure you want to delete this legal right?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button type="button"
+                class="btn btn-danger"
+                onclick="confirmDeleteWomenRight()">
+          <i class="bi bi-trash me-1"></i>
+          Delete
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN EVIDENCE CHECKLIST MODAL -->
+<div class="modal fade" id="evidenceChecklistModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="evidenceChecklistModalTitle">
+          Add Evidence Checklist
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <input type="hidden" id="evidenceChecklistId">
+
+        <div class="row g-3">
+
+          <div class="col-md-6">
+            <label class="form-label">Situation ID</label>
+            <input type="text"
+                   class="form-control"
+                   id="evidenceSituationId"
+                   placeholder="e.g. domestic">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Situation Title</label>
+            <input type="text"
+                   class="form-control"
+                   id="evidenceSituationTitle"
+                   placeholder="e.g. Domestic Violence">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Situation Icon</label>
+            <input type="text"
+                   class="form-control"
+                   id="evidenceSituationIcon"
+                   placeholder="e.g. bi-house">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Situation Color</label>
+            <input type="text"
+                   class="form-control"
+                   id="evidenceSituationColor"
+                   placeholder="#198754">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Evidence Item</label>
+            <textarea class="form-control"
+                      id="evidenceItem"
+                      rows="4"
+                      placeholder="Enter the evidence item"></textarea>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button type="button"
+                class="btn-grad-blue"
+                onclick="saveEvidenceChecklist()">
+          Save
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN DELETE EVIDENCE CHECKLIST CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteEvidenceChecklistModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+          Delete Evidence Checklist
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-0">
+          Are you sure you want to delete this evidence checklist?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button type="button"
+                class="btn btn-danger"
+                onclick="confirmDeleteEvidenceChecklist()">
+          <i class="bi bi-trash me-1"></i>
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN LEGAL AID MODAL -->
+<div class="modal fade" id="legalAidModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="legalAidModalTitle">
+          Add Legal Aid / Helpline
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <input type="hidden" id="legalAidId">
+
+        <div class="row g-3">
+
+          <div class="col-md-6">
+            <label class="form-label">Name</label>
+            <input type="text"
+                   class="form-control"
+                   id="legalAidName"
+                   placeholder="e.g. Women Helpline">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Contact</label>
+            <input type="text"
+                   class="form-control"
+                   id="legalAidContact"
+                   placeholder="e.g. 181">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Icon</label>
+            <input type="text"
+                   class="form-control"
+                   id="legalAidIcon"
+                   placeholder="e.g. bi-telephone">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Color</label>
+            <input type="text"
+                   class="form-control"
+                   id="legalAidColor"
+                   placeholder="#198754">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Purpose</label>
+            <textarea class="form-control"
+                      id="legalAidPurpose"
+                      rows="2"
+                      placeholder="Enter the purpose"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Who Can Use</label>
+            <textarea class="form-control"
+                      id="legalAidWhoCanUse"
+                      rows="2"
+                      placeholder="Who can use this service"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Website</label>
+            <input type="text"
+                   class="form-control"
+                   id="legalAidWebsite"
+                   placeholder="https://...">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Description</label>
+            <textarea class="form-control"
+                      id="legalAidDescription"
+                      rows="3"
+                      placeholder="Enter description"></textarea>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button type="button"
+                class="btn-grad-blue"
+                onclick="saveLegalAid()">
+          Save
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN DELETE LEGAL AID CONFIRMATION MODAL -->
+<div class="modal fade" id="deleteLegalAidModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+          Delete Legal Aid / Helpline
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-0">
+          Are you sure you want to delete this legal aid / helpline?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button type="button"
+                class="btn btn-danger"
+                onclick="confirmDeleteLegalAid()">
+          <i class="bi bi-trash me-1"></i>
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ADMIN AWARENESS ARTICLE MODAL -->
+<div class="modal fade" id="awarenessArticleModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="awarenessArticleModalTitle">
+          Add Awareness Article
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <input type="hidden" id="awarenessArticleId">
+
+        <div class="row g-3">
+
+          <div class="col-md-8">
+            <label class="form-label">Title</label>
+            <input type="text"
+                   class="form-control"
+                   id="awarenessArticleTitle"
+                   placeholder="Enter article title">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Category</label>
+            <input type="text"
+                   class="form-control"
+                   id="awarenessArticleCategory"
+                   placeholder="e.g. Safety">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Excerpt</label>
+            <textarea class="form-control"
+                      id="awarenessArticleExcerpt"
+                      rows="2"
+                      placeholder="Short summary of the article"></textarea>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Content</label>
+            <textarea class="form-control"
+                      id="awarenessArticleContent"
+                      rows="8"
+                      placeholder="Enter full article content"></textarea>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Article Date</label>
+            <input type="date"
+                   class="form-control"
+                   id="awarenessArticleDate">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Author</label>
+            <input type="text"
+                   class="form-control"
+                   id="awarenessArticleAuthor"
+                   placeholder="Enter author name">
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button type="button"
+                class="btn-grad-blue"
+                onclick="saveAwarenessArticle()">
+          Save
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="deleteAwarenessArticleModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+          Delete Awareness Article
+        </h5>
+
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-0">
+          Are you sure you want to delete this awareness article?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+
+        <button type="button"
+                class="btn btn-secondary"
+                data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button type="button"
+                class="btn btn-danger"
+                onclick="confirmDeleteAwarenessArticle()">
+          <i class="bi bi-trash me-1"></i>
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="deleteNotificationModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+          Delete Notification
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-0">
+          Are you sure you want to delete this notification?
+        </p>
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger"
+          id="confirmDeleteNotificationBtn">
+          <i class="bi bi-trash me-1"></i>
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-chat-dots-fill text-primary me-2"></i>
+          Send Feedback
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="mb-3">
+          <label for="feedbackSubject" class="form-label fw-semibold">
+            Subject
+          </label>
+
+          <input
+            type="text"
+            id="feedbackSubject"
+            class="form-control"
+            placeholder="Enter feedback subject"
+          >
+        </div>
+
+        <div class="mb-3">
+          <label for="feedbackMessage" class="form-label fw-semibold">
+            Message
+          </label>
+
+          <textarea
+            id="feedbackMessage"
+            class="form-control"
+            rows="5"
+            placeholder="Write your feedback or message..."
+          ></textarea>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn-grad-blue"
+          id="submitFeedbackBtn"
+        >
+          <i class="bi bi-send me-1"></i>
+          Submit Feedback
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Admin Reply Modal -->
+<div class="modal fade" id="adminReplyModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-reply-fill text-primary me-2"></i>
+          Reply to Feedback
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+
+        <div class="mb-3">
+          <div class="small text-muted">User</div>
+          <div class="fw-semibold" id="adminReplyUser">-</div>
+        </div>
+
+        <div class="mb-3">
+          <div class="small text-muted">Subject</div>
+          <div class="fw-semibold" id="adminReplySubject">-</div>
+        </div>
+
+        <div class="mb-3">
+          <div class="small text-muted mb-1">Original Message</div>
+
+          <div
+            class="p-3 rounded bg-light small"
+            id="adminReplyOriginalMessage">
+            -
+          </div>
+        </div>
+
+        <div class="mb-3">
+
+          <div class="small text-muted mb-2">
+            Reply History
+          </div>
+
+          <div
+            id="adminReplyHistory"
+            class="border rounded p-3"
+            style="max-height:250px; overflow-y:auto;">
+          </div>
+
+        </div>
+
+        <div class="mb-3">
+
+          <label
+            for="adminReplyText"
+            class="form-label fw-semibold">
+            Your Reply
+          </label>
+
+          <textarea
+            id="adminReplyText"
+            class="form-control"
+            rows="4"
+            placeholder="Write your reply..."></textarea>
+
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn-grad-blue"
+          id="sendAdminReplyBtn">
+          <i class="bi bi-send me-1"></i>
+          Send Reply
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- Admin Delete Feedback Modal -->
+<div class="modal fade" id="deleteFeedbackModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-trash-fill text-danger me-2"></i>
+          Delete Feedback
+        </h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal">
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-1 fw-semibold">
+          Are you sure you want to delete this feedback?
+        </p>
+
+        <p class="small text-muted mb-0">
+          This will permanently delete the feedback and its reply history.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal">
+          Cancel
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-danger"
+          id="confirmDeleteFeedbackBtn">
+          <i class="bi bi-trash me-1"></i>
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ================================================================ -->
+<!-- FOOTER -->
+<!-- ================================================================ -->
+<footer class="site-footer mt-5">
+  <div class="container py-4">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <h5 class="fw-bold mb-2"><i class="bi bi-globe2 me-2"></i>Public Service Portal</h5>
+        <p class="small" style="opacity:.8">One platform for jobs, government schemes, women's rights, legal documents and citizen resources — in your language.</p>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6 class="fw-bold mb-2">Services</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-1"><a href="#" onclick="showSection('jobs');return false;" class="footer-link">Job Assistant</a></li>
+          <li class="mb-1"><a href="#" onclick="showSection('women');return false;" class="footer-link">Women &amp; Rights</a></li>
+          <li class="mb-1"><a href="#" onclick="showSection('schemes');return false;" class="footer-link">Government Schemes</a></li>
+          <li class="mb-1"><a href="#" onclick="showSection('about');return false;" class="footer-link">About</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h6 class="fw-bold mb-2">Account</h6>
+        <ul class="list-unstyled small">
+          <li class="mb-1"><a href="#" onclick="showSection('login');return false;" class="footer-link">Login</a></li>
+          <li class="mb-1"><a href="#" onclick="showSection('signup');return false;" class="footer-link">Sign Up</a></li>
+          <li class="mb-1"><a href="#" onclick="showSection('dashboard');return false;" class="footer-link">Dashboard</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h6 class="fw-bold mb-2">Contact &amp; Help</h6>
+        <p class="small mb-1" style="opacity:.8"><i class="bi bi-envelope me-2"></i>help@publicserviceportal.edu</p>
+        <p class="small mb-1" style="opacity:.8"><i class="bi bi-telephone me-2"></i>1800-000-000 (demo)</p>
+        <p class="small mt-2" style="opacity:.6">
+  Privacy: This is an academic prototype. User and service information is stored in the project's MySQL database for demonstration purposes.
+</p>
+      </div>
+    </div>
+    <hr style="border-color:rgba(255,255,255,.2)" />
+    <div class="d-flex flex-wrap justify-content-between align-items-center small" style="opacity:.7">
+      <span>© 2026 Public Service Portal — TYBSc Computer Science Academic Project.</span>
+      <span>HTML5 · CSS3 · JavaScript · Bootstrap 5 · Python · Flask · MySQL</span>
+    </div>
+  </div>
+</footer>
+
+<!-- DETAIL MODAL -->
+<div class="modal fade" id="detailModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title fw-bold" id="detailModalTitle">Details</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body" id="detailModalBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- REVIEW MODAL -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title fw-bold">Write a Review</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <label class="form-label fw-semibold">Your Rating</label>
+        <div class="star-input mb-3" id="starInput">
+          <i class="bi bi-star-fill" data-v="1" style="color:#d1d5db;font-size:1.8rem;cursor:pointer;transition:.1s"></i>
+          <i class="bi bi-star-fill" data-v="2" style="color:#d1d5db;font-size:1.8rem;cursor:pointer;transition:.1s"></i>
+          <i class="bi bi-star-fill" data-v="3" style="color:#d1d5db;font-size:1.8rem;cursor:pointer;transition:.1s"></i>
+          <i class="bi bi-star-fill" data-v="4" style="color:#d1d5db;font-size:1.8rem;cursor:pointer;transition:.1s"></i>
+          <i class="bi bi-star-fill" data-v="5" style="color:#d1d5db;font-size:1.8rem;cursor:pointer;transition:.1s"></i>
+        </div>
+        <label class="form-label fw-semibold">Your Review</label>
+        <textarea class="form-control" id="reviewText" rows="3" placeholder="Write your experience..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn-grad-blue" onclick="submitReview()">Submit Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SERVICE REQUEST MODAL -->
+<div class="modal fade" id="serviceReqModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title fw-bold" id="srModalTitle">Request Service</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-body">
+        <div id="srWorkerInfo" class="mb-3"></div>
+        <form id="serviceReqForm" onsubmit="submitServiceRequest(event)">
+          <div class="mb-3"><label class="form-label fw-semibold">Preferred Date</label><input type="date" class="form-control" id="srDate" required /></div>
+          <div class="mb-3"><label class="form-label fw-semibold">Preferred Time</label><input type="time" class="form-control" id="srTime" required /></div>
+          <div class="mb-3"><label class="form-label fw-semibold">Your Location / Address</label><textarea class="form-control" id="srLocation" rows="2" required></textarea></div>
+          <div class="mb-3"><label class="form-label fw-semibold">Describe Your Requirement</label><textarea class="form-control" id="srDetails" rows="3" required></textarea></div>
+          <button type="submit" class="btn-grad-green w-100"><i class="bi bi-send-fill me-1"></i>Submit Request</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACCESSIBILITY BUTTON -->
+<button class="a11y-btn" onclick="toggleA11y()" title="Accessibility"><i class="bi bi-universal-access-circle"></i></button>
+<div id="a11yPanel" class="a11y-panel d-none">
+  <h6 class="fw-bold mb-2">Accessibility</h6>
+  <div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" id="largeText" onchange="toggleLargeText()"><label class="form-check-label small" for="largeText">Large Text</label></div>
+  <div class="form-check form-switch mb-1"><input class="form-check-input" type="checkbox" id="highContrast" onchange="toggleContrast()"><label class="form-check-label small" for="highContrast">High Contrast</label></div>
+  <div class="form-check form-switch"><input class="form-check-input" type="checkbox" id="reduceMotion" onchange="toggleMotion()"><label class="form-check-label small" for="reduceMotion">Reduce Motion</label></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
