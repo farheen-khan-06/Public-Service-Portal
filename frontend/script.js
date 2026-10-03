@@ -2669,7 +2669,7 @@ if (r.status.toLowerCase() === 'pending') {
 
 async function updateWorkerRequestStatus(id, status) {
 
-  const workerId = getMyWorkerId();
+  const workerId = await getMyWorkerId();
 
   if (!workerId) {
     toast('Worker profile not found', 'error');
